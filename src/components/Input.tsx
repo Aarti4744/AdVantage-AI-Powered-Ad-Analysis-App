@@ -1,15 +1,34 @@
-import { TextInput, StyleSheet } from 'react-native';
+import React from 'react';
+import { StyleSheet, TextInput, View, TextInputProps } from 'react-native';
 
-export default function Input(props: any) {
-  return <TextInput style={styles.input} {...props} />;
+type InputProps = TextInputProps & {
+  containerStyle?: any;
+};
+
+export default function Input({ style, containerStyle, ...rest }: InputProps) {
+  return (
+    <View style={[styles.container, containerStyle]}>
+      <TextInput
+        style={[styles.input, style]}
+        placeholderTextColor="#94a3b8"
+        {...rest}
+      />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-  input: {
+  container: {
+    borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
-    borderRadius: 6,
-    marginVertical: 8,
+    borderColor: '#e5e7eb',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    marginTop: 12,
+    backgroundColor: '#ffffff',
+  },
+  input: {
+    fontSize: 16,
+    padding: 0,
   },
 });

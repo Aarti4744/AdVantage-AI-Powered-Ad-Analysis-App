@@ -3,7 +3,7 @@ import Input from '../../components/Input';
 import Button from '../../components/Button';
 
 export default function SignupScreen() {
-  return (
+  return ( 
     <View style={{ padding: 20 }}>
       <Text style={{ fontSize: 24 }}>Signup</Text>
 

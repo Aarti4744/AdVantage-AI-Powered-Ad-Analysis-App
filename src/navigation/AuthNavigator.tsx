@@ -10,6 +10,8 @@ import ForgotPasswordScreen from '../screens/auth/ForgotPasswordScreen';
 
 // Import your AppNavigator
 import AppNavigator from './AppNavigator'; 
+import AuditResultScreen from '../screens/home/AuditResultScreen';
+import AuditDetailScreen from '../screens/home/AuditDetailScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -23,8 +25,10 @@ export default function AuthNavigator() {
       <Stack.Screen name={ROUTES.FORGOT_PASSWORD} component={ForgotPasswordScreen} />
         
 
-      {/* 1. Add AppNavigator here so Auth screens can reach it */}
       <Stack.Screen name="MainApp" component={AppNavigator} />
+      <Stack.Screen name="AuditResult" component={AuditResultScreen} />
+      <Stack.Screen name="AuditDetail" component={AuditDetailScreen} />
+
     </Stack.Navigator>
   );
 }

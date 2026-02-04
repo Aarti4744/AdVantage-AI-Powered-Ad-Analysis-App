@@ -14,9 +14,7 @@ import {
 import {
   Search,
   SlidersHorizontal,
-  Eye,
-  Download,
-  Trash2,
+  Eye, // Kept Eye
   ChevronLeft,
   ChevronRight,
   Menu,
@@ -33,9 +31,6 @@ export default function HistoryScreen({ navigation }: any) {
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
 
-  /**
-   * Fetch History from API
-   */
   const fetchHistory = useCallback(async (pageNum = 1) => {
     try {
       setLoading(pageNum === 1);
@@ -75,7 +70,7 @@ export default function HistoryScreen({ navigation }: any) {
   const getScoreColor = (score: number) => {
     if (score >= 80) return '#10b981';
     if (score >= 50) return '#6366f1';
-    return '#f59e0b';
+    return '#f43f5e';
   };
 
   const renderAuditCard = (item: any) => {
@@ -84,16 +79,18 @@ export default function HistoryScreen({ navigation }: any) {
       month: 'short', day: 'numeric', year: 'numeric'
     });
     
-    // Extact simple filename from S3 key
     const fileName = item.s3_key.split('/').pop() || 'Creative Analysis';
+
+    const handleViewDetails = () => {
+        navigation.navigate('AuditDetail', { auditId: item.id });
+    };
 
     return (
       <TouchableOpacity
         key={item.id}
         activeOpacity={0.88}
         style={styles.card}
-        // Navigate to Detail Screen passing the specific audit ID
-        onPress={() => navigation.navigate('AuditDetail', { auditId: item.id })}
+        onPress={handleViewDetails} 
       >
         <View style={styles.cardHeader}>
           <View style={[styles.previewBox, { backgroundColor: scoreColor + '15' }]}>
@@ -103,7 +100,7 @@ export default function HistoryScreen({ navigation }: any) {
           <View style={styles.nameSection}>
             <Text style={styles.auditTitle} numberOfLines={1}>{fileName}</Text>
             <Text style={styles.audienceText} numberOfLines={1}>
-              Audience: {item.target_audience}
+              Target: {item.target_audience}
             </Text>
           </View>
 
@@ -118,16 +115,11 @@ export default function HistoryScreen({ navigation }: any) {
           <View style={styles.actionButtons}>
             <TouchableOpacity 
                 style={styles.actionIcon} 
-                onPress={() => navigation.navigate('AuditDetail', { auditId: item.id })}
+                onPress={handleViewDetails} 
             >
               <Eye color="#94a3b8" size={18} strokeWidth={2.5} />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.actionIcon}>
-              <Download color="#94a3b8" size={18} strokeWidth={2.5} />
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.actionIcon, { backgroundColor: '#ef444410' }]}>
-              <Trash2 color="#ef4444" size={18} strokeWidth={2.5} />
-            </TouchableOpacity>
+            {/* Download and Delete buttons removed from here */}
           </View>
         </View>
       </TouchableOpacity>
@@ -136,14 +128,13 @@ export default function HistoryScreen({ navigation }: any) {
 
   return (
     <View style={styles.container}>
-      {/* Dynamic Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.openDrawer()}>
           <Menu color="#f8fafc" size={24} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>History</Text>
+        <Text style={styles.headerTitle}>Audit History</Text>
         <View style={styles.countPill}>
-          <Text style={styles.countText}>{total} items</Text>
+          <Text style={styles.countText}>{total} Total</Text>
         </View>
       </View>
 
@@ -153,13 +144,13 @@ export default function HistoryScreen({ navigation }: any) {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#22d3ee" />
         }
       >
-        <Text style={styles.screenSubtitle}>View previous analysis and results</Text>
+        <Text style={styles.screenSubtitle}>Manage and review your creative audits</Text>
 
         <View style={styles.searchRow}>
           <View style={styles.searchInputWrapper}>
             <Search color="#64748b" size={20} />
             <TextInput
-              placeholder="Filter by name..."
+              placeholder="Search history..."
               placeholderTextColor="#64748b"
               style={styles.searchInput}
             />
@@ -177,19 +168,15 @@ export default function HistoryScreen({ navigation }: any) {
               audits.map(renderAuditCard)
             ) : (
               <View style={styles.emptyState}>
-                <Text style={styles.emptyText}>No previous audits found.</Text>
+                <Text style={styles.emptyText}>No audits found.</Text>
               </View>
             )}
           </View>
         )}
 
-        {/* Dynamic Pagination */}
         {total > 0 && !loading && (
           <View style={styles.pagination}>
-            <Text style={styles.paginationText}>
-              Showing Page {page} of {Math.ceil(total / 5)}
-            </Text>
-
+            <Text style={styles.paginationText}>Page {page} of {Math.ceil(total / 5)}</Text>
             <View style={styles.pageControls}>
               <TouchableOpacity 
                 style={[styles.pageArrow, page === 1 && { opacity: 0.3 }]} 
@@ -198,11 +185,9 @@ export default function HistoryScreen({ navigation }: any) {
               >
                 <ChevronLeft color="#94a3b8" size={22} />
               </TouchableOpacity>
-              
               <View style={styles.currentPageDot}>
                 <Text style={styles.currentPageText}>{page}</Text>
               </View>
-
               <TouchableOpacity 
                 style={[styles.pageArrow, audits.length < 5 && { opacity: 0.3 }]} 
                 disabled={audits.length < 5}
@@ -220,10 +205,7 @@ export default function HistoryScreen({ navigation }: any) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#020617' },
-  header: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 20, paddingTop: 55, paddingBottom: 16,
-  },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 55, paddingBottom: 16 },
   headerTitle: { color: '#f8fafc', fontSize: 20, fontWeight: '800' },
   countPill: { backgroundColor: '#1e293b', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1, borderColor: '#334155' },
   countText: { color: '#22d3ee', fontSize: 13, fontWeight: '700' },
